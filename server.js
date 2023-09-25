@@ -3,14 +3,14 @@ const cors = require('cors');
 const { connectToDb, getDb } = require('./db');
 const dotenv = require('dotenv')
 const {projectByName,createGmail } = require('./services/portfolioService');
-// const path = require('path');
-// const {fileURLToPath}= require('url');
+const path = require('path');
+const {fileURLToPath}= require('url');
 
 
 const app = express();
 app.use(express.json());
 app.use(cors());
-// app.use(express.static('./client/build'))
+app.use(express.static('./client'))
 
 dotenv.config();
 
