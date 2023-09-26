@@ -3,6 +3,8 @@ const cors = require('cors');
 const { connectToDb, getDb } = require('./db');
 const dotenv = require('dotenv')
 const {projectByName,createGmail } = require('./services/portfolioService');
+const path = require('path');
+const {fileURLToPath}= require('url');
 
 
 const app = express();
