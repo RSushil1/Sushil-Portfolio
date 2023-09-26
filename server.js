@@ -33,7 +33,10 @@ app.post('/api/gmail', async (req, res) => {
     res.status(200).json(result);
 })
 
-  
+ //rest api
+app.use("*", function(req, res){
+    res.sendFile(path.join(__dirname, "./client/index.html"))
+  }) 
 
 // Database Connection
 let db;
