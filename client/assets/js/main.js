@@ -1,4 +1,4 @@
-(function() {
+(function () {
   "use strict";
 
   /**
@@ -107,7 +107,7 @@
   /**
    * Mobile nav toggle
    */
-  on('click', '.mobile-nav-toggle', function(e) {
+  on('click', '.mobile-nav-toggle', function (e) {
     select('#navbar').classList.toggle('navbar-mobile')
     this.classList.toggle('bi-list')
     this.classList.toggle('bi-x')
@@ -116,7 +116,7 @@
   /**
    * Mobile nav dropdowns activate
    */
-  on('click', '.navbar .dropdown > a', function(e) {
+  on('click', '.navbar .dropdown > a', function (e) {
     if (select('#navbar').classList.contains('navbar-mobile')) {
       e.preventDefault()
       this.nextElementSibling.classList.toggle('dropdown-active')
@@ -126,7 +126,7 @@
   /**
    * Scrool with ofset on links with a class name .scrollto
    */
-  on('click', '.scrollto', function(e) {
+  on('click', '.scrollto', function (e) {
     if (select(this.hash)) {
       e.preventDefault()
 
@@ -224,5 +224,58 @@
    * Initiate Pure Counter 
    */
   new PureCounter();
+
+  function fetchProjectData(page, limit) {
+    fetch(`http://localhost:8000/students?page=${page}&limit=${limit}`).then((data) => {
+
+      return data.json();
+    }).then((objectData) => {
+      displayStudents(objectData.students);
+      displayPagination(objectData.previousPage, objectData.nextPage, objectData.totalPage, objectData.totalStudents)
+    })
+
+    function displayStudents(students) {
+      let tableData = "";
+      students.map((values) => {
+        tableData += `<tr>
+                  <td>${values.id}</td>
+                  <td>${values.first_name}</td>
+                  <td>${values.last_name}</td>
+                  <td>${values.email}</td>
+                  <td>
+                  <button id = "${values._id}" onClick = "handleViewSubmit(event)" type="submit" class="btn btn-primary btn-sm">Details</button>
+                  </td>
+                </tr>`;
+      })
+      document.getElementById("table_body").
+        innerHTML = tableData;
+
+    }
+  }
+
+  let form = document.getElementById('emailForm');
+  form.addEventListener('submit', handleGmail);
+
+  function handleGmail(event) {
+    event.preventDefault();
+    let formData = new FormData(form);
+    let data = Object.fromEntries(formData);
+    let jsonData = JSON.stringify(data);
+
+    fetch('https://sushilportfolio.vercel.app/api/gmail', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: jsonData
+
+    }).then((res) => {
+        return res.json();
+    }).then((result) => {
+        console.log(result);
+    }).catch((err) => {
+        console.log(err);
+    })
+}
 
 })()
