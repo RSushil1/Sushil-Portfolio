@@ -262,7 +262,7 @@
     let data = Object.fromEntries(formData);
     let jsonData = JSON.stringify(data);
 
-    fetch('https://sushilportfolio.vercel.app/api/gmail', {
+    fetch('/api/gmail', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
