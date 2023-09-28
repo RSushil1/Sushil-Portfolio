@@ -2,48 +2,28 @@
 module.exports.GetAllProjectsList = function (db) {
 
   let results = {};
-  let students = [];
-  let totalCount;
+  let projects = [];
 
   const query = { date: { $gt: 0 } };
   const options = {
-      // sort returned documents in ascending order by id
-      sort: { date: -1 },
-      // Include only the `id`,`first_name`,`last_name` and `email` fields in each returned document
-      projection: { _id: 1, projectName: 1, description: 1, appLink: 1, gitHubLink: 1},
+    // sort returned documents in ascending order by id
+    sort: { date: -1 },
+    // Include only the `id`,`first_name`,`last_name` and `email` fields in each returned document
+    projection: { _id: 1, projectName: 1, description: 1, appLink: 1, gitHubLink: 1 },
   };
 
-
-  return db.collection('Students')
-      .countDocuments()
-      .then(count => {
-          totalCount = count;
-          return db.collection('Students')
-              .find(query, options) // cursor toArray forEach
-              .skip(startIndex)
-              .limit(endIndex)
-              .forEach(student => students.push(student))
-              .then(_ => {
-                  results.students = students;
-                  results.error=null;
-                  if (startIndex > 0) {
-                      results.previousPage = page - 1;
-                  }
-
-                  if (endPage < totalCount) {
-                      results.nextPage = page + 1;
-                  }
-
-                  results.totalPage = Math.ceil(totalCount / endIndex);
-                  results.totalStudents = totalCount;
-                  return results;
-              }).catch((err) => {
-                  console.error(err);
-                  results.error = err;
-                  return results;
-              })
-
-      })
+  return db.collection('Projects')
+    .find(query, options) // cursor toArray forEach
+    .forEach(project => projects.push(project))
+    .then(_ => {
+      results.projects = projects;
+      results.error = null;
+      return results;
+    }).catch((err) => {
+      console.error(err);
+      results.error = err;
+      return results;
+    })
 
 }
 
@@ -51,7 +31,7 @@ module.exports.GetAllProjectsList = function (db) {
 module.exports.projectByName = function (Name, db) {
   return db
     .collection("Projects")
-    .find({ name: Name})
+    .find({ name: Name })
     .then((doc) => {
       return doc;
     })
@@ -69,12 +49,10 @@ const nodemailer = require('nodemailer');
 const { google } = require('googleapis');
 
 // These id's and secrets should come from .env file.
-const CLIENT_ID =process.env.CLIENT_ID;
-const CLIENT_SECRET =process.env.CLIENT_SECRET;
-const REDIRECT_URL =process.env.REDIRECT_URL;
-const REFRESH_TOKEN =process.env.REFRESH_TOKEN
-console.log(process.env.REFRESH_TOKEN)
-console.log(process.env.CLIENT_SECRET)
+const CLIENT_ID = process.env.CLIENT_ID;
+const CLIENT_SECRET = process.env.CLIENT_SECRET;
+const REDIRECT_URL = process.env.REDIRECT_URL;
+const REFRESH_TOKEN = process.env.REFRESH_TOKEN
 
 const oAuth2Client = new google.auth.OAuth2(
   CLIENT_ID,
@@ -101,13 +79,13 @@ module.exports.createGmail = async function (data) {
       },
     });
 
-   // Compose the email
-   const mailOptions = {
-    from: 'Sushil Portfolio <sushilrameshrajput1998@gmail.com>',
-    to: 'sushilsinghrathore1998@gmail.com',
-    subject: `New email from ${name} (${email}): ${subject}`,
-    text: message,
-  };
+    // Compose the email
+    const mailOptions = {
+      from: 'Sushil Portfolio <sushilrameshrajput1998@gmail.com>',
+      to: 'sushilsinghrathore1998@gmail.com',
+      subject: `New email from ${name} (${email}): ${subject}`,
+      text: message,
+    };
 
     const result = await transport.sendMail(mailOptions);
     return result;

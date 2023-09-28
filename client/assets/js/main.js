@@ -254,28 +254,60 @@
   }
 
   let form = document.getElementById('emailForm');
-  form.addEventListener('submit', handleGmail);
+  let messageDiv = document.getElementById('message');
 
-  function handleGmail(event) {
-    event.preventDefault();
-    let formData = new FormData(form);
-    let data = Object.fromEntries(formData);
-    let jsonData = JSON.stringify(data);
+form.addEventListener('submit', handleGmail);
 
-    fetch('/api/gmail', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: jsonData
+function handleGmail(event) {
+  event.preventDefault();
+  let formData = new FormData(form);
+  let data = Object.fromEntries(formData);
+  let jsonData = JSON.stringify(data);
 
-    }).then((res) => {
-        return res.json();
-    }).then((result) => {
-        console.log(result);
-    }).catch((err) => {
-        console.log(err);
+  fetch('/api/gmail', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: jsonData,
+  })
+    .then((res) => res.json())
+    .then((result) => {
+      if (result.accepted) {
+        // Clear form fields on success
+        form.reset();
+
+        // Display a success message
+        showMessage('success', 'Message sent successfully!');
+      } else {
+        // Display an error message
+        showMessage('danger', 'Error sending message. Please try again.');
+      }
     })
+    .catch((err) => {
+      console.error(err);
+      // Display a general error message
+      showMessage('danger', 'An error occurred. Please try again later.');
+    });
 }
+
+function showMessage(type, text) {
+  // Clear previous messages
+  messageDiv.innerHTML = '';
+
+  // Create a Bootstrap-style message element
+  let messageElement = document.createElement('div');
+  messageElement.className = `alert alert-${type}`;
+  messageElement.textContent = text;
+
+  // Append the message to the message div
+  messageDiv.appendChild(messageElement);
+
+  // Automatically hide the message after a few seconds (optional)
+  setTimeout(() => {
+    messageElement.style.display = 'none';
+  }, 5000); // Hide after 5 seconds
+}
+
 
 })()
