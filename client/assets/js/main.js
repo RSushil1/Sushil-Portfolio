@@ -225,89 +225,183 @@
    */
   new PureCounter();
 
-  function fetchProjectData(page, limit) {
-    fetch(`http://localhost:8000/students?page=${page}&limit=${limit}`).then((data) => {
-
+  function fetchProjectData() {
+    fetch("/projects").then((data) => {
       return data.json();
     }).then((objectData) => {
-      displayStudents(objectData.students);
-      displayPagination(objectData.previousPage, objectData.nextPage, objectData.totalPage, objectData.totalStudents)
+      displayProjects(objectData.projects);
     })
 
-    function displayStudents(students) {
-      let tableData = "";
-      students.map((values) => {
-        tableData += `<tr>
-                  <td>${values.id}</td>
-                  <td>${values.first_name}</td>
-                  <td>${values.last_name}</td>
-                  <td>${values.email}</td>
-                  <td>
-                  <button id = "${values._id}" onClick = "handleViewSubmit(event)" type="submit" class="btn btn-primary btn-sm">Details</button>
-                  </td>
-                </tr>`;
+
+    function displayProjects(projects) {
+      let cardData = "";
+      projects.map((values) => {
+        let buf = values?.photo1?.image
+        cardData += `<div class="col-md-4">
+        <div class="work-box">
+          <a href=${'data:image/jpeg;base64,' + buf.toString('base64')} data-gallery="portfolioGallery" class="portfolio-lightbox">
+            <div class="work-img">
+              <img src=${'data:image/jpeg;base64,' + buf.toString('base64')} alt="Screenshot" class="img-fluid">
+            </div>
+          </a>
+          <div class="work-content">
+            <div class="row">
+              <div class="col-sm-8">
+                <h2 class="w-title">${values.projectName}</h2>
+                <div class="w-more">
+                  <p>${values.description}</p>
+                </div>
+                <div class="w-more">
+                  <a href=${values.appLink} class="w-ctegory">App Link</a> / <span class="w-date">Date: ${values.date}</span>
+                </div>
+              </div>
+              <div class="col-sm-4">
+                <div class="w-like ms-1">
+                  <a href=${values.gitHubLink}> <span class="bi bi-github"></span></a>
+                </div>
+                <div class="w-like ms-1">
+                  <a href="portfolio-details.html?name=${values.projectName}"> <span class="bi bi-plus-circle"></span></a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>`;
       })
-      document.getElementById("table_body").
-        innerHTML = tableData;
+      document.getElementById("card_body").
+        innerHTML = cardData;
 
     }
   }
 
+  fetchProjectData();
+
+  const queryString = window.location.search;
+  const urlParams = new URLSearchParams(queryString);
+  const projectName = urlParams.get('name');
+  if (projectName) {
+    //for project details
+    function handleDetails(projectName) {
+      let apiUrl = `/api/project/name/${projectName}`;
+      let pageData = "";
+
+      fetch(apiUrl)
+        .then((response) => { return response.json() })
+        .then((data) => {
+          let buf1 = data[0]?.photo1?.image
+          let buf2 = data[0]?.photo2?.image
+          let buf3 = data[0]?.photo3?.image
+          pageData = `
+        <section id="portfolio-details" class="portfolio-details">
+        <div class="container">
+  
+          <div class="row gy-4">
+            <div class="col-lg-8">
+              <div class="portfolio-details-slider swiper">
+                <div class="swiper-wrapper align-items-center">
+  
+                  <div class="swiper-slide">
+                    <img src="${'data:image/jpeg;base64,' + buf1.toString('base64')}"  alt="preview1">
+                  </div>
+  
+                  <div class="swiper-slide">
+                    <img src="${'data:image/jpeg;base64,' + buf2.toString('base64')}" alt="preview2">
+                  </div>
+  
+                  <div class="swiper-slide">
+                    <img src="${'data:image/jpeg;base64,' + buf3.toString('base64')}" alt="preview3">
+                  </div>
+  
+                </div>
+                <div class="swiper-pagination"></div>
+              </div>
+            </div>
+  
+            <div class="col-lg-4">
+              <div class="portfolio-info">
+                <h3>Project information</h3>
+                <ul>
+                  <li><strong>Name</strong>:${data[0]?.projectName}</li>
+                  <li><strong>Client</strong>: ASU Company</li>
+                  <li><strong>Project date</strong>: ${data[0]?.date}</li>
+                  <li><strong>Project URL</strong>: <a href="#">www.example.com</a></li>
+                </ul>
+              </div>
+              </div>
+              <div class="portfolio-description">
+                <h2>About</h2>
+                <p>
+                  ${data[0].summery}
+                </p>
+              </div>
+  
+          </div>
+  
+        </div>
+      </section>
+        `
+          document.getElementById("portfolio-details").innerHTML = pageData;
+        })
+    }
+    handleDetails(projectName);
+  }
+
+
   let form = document.getElementById('emailForm');
   let messageDiv = document.getElementById('message');
 
-form.addEventListener('submit', handleGmail);
+  form.addEventListener('submit', handleGmail);
 
-function handleGmail(event) {
-  event.preventDefault();
-  let formData = new FormData(form);
-  let data = Object.fromEntries(formData);
-  let jsonData = JSON.stringify(data);
+  function handleGmail(event) {
+    event.preventDefault();
+    let formData = new FormData(form);
+    let data = Object.fromEntries(formData);
+    let jsonData = JSON.stringify(data);
 
-  fetch('/api/gmail', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: jsonData,
-  })
-    .then((res) => res.json())
-    .then((result) => {
-      if (result.accepted) {
-        // Clear form fields on success
-        form.reset();
-
-        // Display a success message
-        showMessage('success', 'Message sent successfully!');
-      } else {
-        // Display an error message
-        showMessage('danger', 'Error sending message. Please try again.');
-      }
+    fetch('/api/gmail', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonData,
     })
-    .catch((err) => {
-      console.error(err);
-      // Display a general error message
-      showMessage('danger', 'An error occurred. Please try again later.');
-    });
-}
+      .then((res) => res.json())
+      .then((result) => {
+        if (result.accepted) {
+          // Clear form fields on success
+          form.reset();
 
-function showMessage(type, text) {
-  // Clear previous messages
-  messageDiv.innerHTML = '';
+          // Display a success message
+          showMessage('success', 'Message sent successfully!');
+        } else {
+          // Display an error message
+          showMessage('danger', 'Error sending message. Please try again.');
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        // Display a general error message
+        showMessage('danger', 'An error occurred. Please try again later.');
+      });
+  }
 
-  // Create a Bootstrap-style message element
-  let messageElement = document.createElement('div');
-  messageElement.className = `alert alert-${type}`;
-  messageElement.textContent = text;
+  function showMessage(type, text) {
+    // Clear previous messages
+    messageDiv.innerHTML = '';
 
-  // Append the message to the message div
-  messageDiv.appendChild(messageElement);
+    // Create a Bootstrap-style message element
+    let messageElement = document.createElement('div');
+    messageElement.className = `alert alert - ${type} `;
+    messageElement.textContent = text;
 
-  // Automatically hide the message after a few seconds (optional)
-  setTimeout(() => {
-    messageElement.style.display = 'none';
-  }, 5000); // Hide after 5 seconds
-}
+    // Append the message to the message div
+    messageDiv.appendChild(messageElement);
+
+    // Automatically hide the message after a few seconds (optional)
+    setTimeout(() => {
+      messageElement.style.display = 'none';
+    }, 5000); // Hide after 5 seconds
+  }
 
 
 })()

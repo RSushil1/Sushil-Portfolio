@@ -1,37 +1,47 @@
-//get all projects name and details
+// Get all projects name and details
 module.exports.GetAllProjectsList = function (db) {
-
   let results = {};
   let projects = [];
 
-  const query = { date: { $gt: 0 } };
+  const query = { id: { $gt: 0 } };
   const options = {
-    // sort returned documents in ascending order by id
-    sort: { date: -1 },
-    // Include only the `id`,`first_name`,`last_name` and `email` fields in each returned document
-    projection: { _id: 1, projectName: 1, description: 1, appLink: 1, gitHubLink: 1 },
+    // Sort returned documents in descending order by date
+    sort: { id: -1 },
+    // Include only the specified fields in each returned document
+    projection: {
+      _id: 1,
+      projectName: 1,
+      description: 1,
+      appLink: 1,
+      gitHubLink: 1,
+      photo1: 1,
+      date: 1
+    },
   };
 
-  return db.collection('Projects')
-    .find(query, options) // cursor toArray forEach
-    .forEach(project => projects.push(project))
-    .then(_ => {
+  return db
+    .collection('Projects')
+    .find(query, options) // Apply query and options here
+    .toArray() // Convert cursor to an array of documents
+    .then((projects) => {
       results.projects = projects;
       results.error = null;
       return results;
-    }).catch((err) => {
+    })
+    .catch((err) => {
       console.error(err);
       results.error = err;
       return results;
-    })
+    });
+};
 
-}
 
 // get project details by name
 module.exports.projectByName = function (Name, db) {
   return db
     .collection("Projects")
-    .find({ name: Name })
+    .find({ projectName: Name })
+    .toArray() // Convert the cursor to an array
     .then((doc) => {
       return doc;
     })
