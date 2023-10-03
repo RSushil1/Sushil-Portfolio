@@ -322,9 +322,9 @@
                 <h3>Project information</h3>
                 <ul>
                   <li><strong>Name</strong>:${data[0]?.projectName}</li>
-                  <li><strong>Client</strong>: ASU Company</li>
+                  <li><strong>Description</strong>:${data[0].description}</li>
                   <li><strong>Project date</strong>: ${data[0]?.date}</li>
-                  <li><strong>Project URL</strong>: <a href="#">www.example.com</a></li>
+                  <li><strong>Project URL</strong>: <a href='${data[0]?.appLink}'>App Link</a></li>
                 </ul>
               </div>
               </div>

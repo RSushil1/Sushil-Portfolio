@@ -20,7 +20,7 @@ MongoClient.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
     const collection = db.collection(collectionName);
 
     // Read the WebP image file
-    const imageBuffer = await fs.promises.readFile('client/assets/img/work-111.webp');
+    const imageBuffer = await fs.promises.readFile('client/assets/img/work-2.webp');
 
     // Convert the WebP image to another format (e.g., PNG or JPEG) using Sharp
     const convertedImageBuffer = await sharp(imageBuffer).toFormat('webp').toBuffer();
@@ -32,8 +32,8 @@ MongoClient.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
     // Define the update operation
     const updateOperation = {
       $set: {
-        'photo3.name': 'webp_image',
-        'photo3.image': convertedImageBuffer, // Set the new image binary data
+        'photo1.name': 'webp_image',
+        'photo1.image': convertedImageBuffer, // Set the new image binary data
       },
     };
 
