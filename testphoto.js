@@ -20,20 +20,20 @@ MongoClient.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
     const collection = db.collection(collectionName);
 
     // Read the WebP image file
-    const imageBuffer = await fs.promises.readFile('client/assets/img/work-2.webp');
+    const imageBuffer = await fs.promises.readFile('client/assets/img/work-444.webp');
 
     // Convert the WebP image to another format (e.g., PNG or JPEG) using Sharp
     const convertedImageBuffer = await sharp(imageBuffer).toFormat('webp').toBuffer();
 
     // Specify the filter using the document's _id
-    const objectId = '651adfbc106e836492094637'; // Replace with the actual _id
+    const objectId = '651c26901a5ba06528396482'; // Replace with the actual _id
     const filter = { _id: new ObjectId(objectId) }; // Use ObjectId() to create an ObjectID
 
     // Define the update operation
     const updateOperation = {
       $set: {
-        'photo1.name': 'webp_image',
-        'photo1.image': convertedImageBuffer, // Set the new image binary data
+        'photo3.name': 'webp_image',
+        'photo3.image': convertedImageBuffer, // Set the new image binary data
       },
     };
 
