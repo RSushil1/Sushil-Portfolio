@@ -1,8 +1,6 @@
 // Get all projects name and details
 module.exports.GetAllProjectsList = function (db) {
   let results = {};
-  let projects = [];
-
   const query = { id: { $gt: 0 } };
   const options = {
     // Sort returned documents in descending order by date
@@ -74,7 +72,6 @@ oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN });
 module.exports.createGmail = async function (data) {
   try {
     const { name, email, subject, message } = data;
-    console.log(data)
     const accessToken = await oAuth2Client.getAccessToken();
 
     const transport = nodemailer.createTransport({

@@ -4,7 +4,6 @@ const { connectToDb, getDb } = require('./db');
 const dotenv = require('dotenv')
 const {GetAllProjectsList,projectByName,createGmail } = require('./services/portfolioService');
 const path = require('path');
-const {fileURLToPath}= require('url');
 
 
 const app = express();
@@ -34,7 +33,6 @@ app.get('/projects', async (req, res) => {
 
 // get by name
 app.get('/api/project/name/:name', async (req, res) => {
-    console.log(req.params.name)
     let result = await projectByName(req.params.name, db);
     res.status(200).json(result);
     
@@ -42,7 +40,6 @@ app.get('/api/project/name/:name', async (req, res) => {
 
 //Gmail post method
 app.post('/api/gmail', async (req, res) => {
-    console.log(req.body)
     let result = await createGmail(req.body);
     res.status(200).json(result);
 })
