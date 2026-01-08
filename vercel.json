@@ -2,11 +2,33 @@
   "version": 2,
   "name": "Sushil-Portfolio",
   "builds": [
-    { "src": "server.js", "use": "@vercel/node" }
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "portfolio-react/dist"
+      }
+    },
+    {
+      "src": "server.js",
+      "use": "@vercel/node"
+    }
   ],
-  "routes": [  
-    { "src": "/api/(.*)", "dest": "/server.js" },
-
-    { "src": "/(.*)", "dest": "/server.js" }
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/server.js"
+    },
+    {
+      "src": "/projects",
+      "dest": "/server.js"
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
   ]
 }
