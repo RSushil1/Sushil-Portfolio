@@ -9,7 +9,7 @@ const path = require('path');
 const app = express();
 app.use(express.json());
 app.use(cors());
-app.use(express.static('./client'))
+app.use(express.static('./portfolio-react/dist'))
 
 dotenv.config();
 
@@ -46,7 +46,7 @@ app.post('/api/gmail', async (req, res) => {
 
  //rest api
 app.use("*", function(req, res){
-    res.sendFile(path.join(__dirname, "./client"))
+    res.sendFile(path.join(__dirname, "./portfolio-react/dist/index.html"))
   }) 
 
 // Database Connection
